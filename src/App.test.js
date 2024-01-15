@@ -1,8 +1,22 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import React, { useEffect, useState } from 'react';
+import matter from 'gray-matter';
+import BlogPost from './BlogPost';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
-});
+function App() {
+  const [post, setPost] = useState({});
+
+  useEffect(() => {
+    fetch('/posts/my-first-post.md')
+      .then((response) => response.text())
+      .then((text) => {
+        const { data, content } = matter(text);
+        setPost({ data, content });
+      });
+  }, []);
+
+  return (
+    <div>
+      {post.content && <BlogPost {...post} />}
+    </div>
+  );
+}
